@@ -7,21 +7,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/searchBox">
+        android:id="@+id/searchBox"
+        android:orientation="horizontal">
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".9"
-            android:hint="Search for a Movie Here" />
+            android:hint="Search for a Movie Here"
+            android:id="@+id/search"
+            android:text="batman"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".1"
-            android:text="Search"/>
+            android:text="Search"
+            android:onClick="Search"/>
     </LinearLayout>
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/searchBox"
         android:id="@+id/searchList"
         android:visibility="invisible"></ListView>
@@ -32,5 +36,16 @@
         android:textSize="40dp"
         android:layout_below="@id/searchBox"
         android:layout_centerHorizontal="true"
-        android:paddingTop="40dp"/>
+        android:paddingTop="40dp"
+        android:id="@+id/textView" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/searchBox"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:visibility="invisible"/>
 </RelativeLayout>
