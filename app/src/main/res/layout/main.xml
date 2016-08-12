@@ -8,14 +8,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/searchBox"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".9"
             android:hint="Search for a Movie Here"
-            android:id="@+id/search"
-            android:text="analyze that"/>
+            android:id="@+id/search"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

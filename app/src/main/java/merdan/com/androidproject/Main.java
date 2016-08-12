@@ -1,12 +1,14 @@
 package merdan.com.androidproject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -40,6 +42,7 @@ public class Main extends AppCompatActivity {
     String searchMovie="http://api.themoviedb.org/3/search/movie?api_key=c00867b825ec5a921bb3c3bf6dfad2b2&query=",
            getMovie="http://api.themoviedb.org/3/movie/",
            apiKey="?api_key=c00867b825ec5a921bb3c3bf6dfad2b2";
+    List<Movie> movies;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,13 @@ public class Main extends AppCompatActivity {
         searchList.setOnItemClickListener(goToMovie);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
         textView=(TextView)findViewById(R.id.textView);
+
+        if(getIntent().getExtras()!=null){
+            String searchBack=(String)getIntent().getExtras().get("query");
+            movieSearched=searchBack;
+            Thread toList=new Thread(searchForMovie);
+            toList.start();}
+
     }
     Runnable searchForMovie=new Runnable() {
         @Override
@@ -91,7 +101,7 @@ public class Main extends AppCompatActivity {
     private void putData(final String json) throws JSONException {
         JSONObject page=new JSONObject(json);
         JSONArray results=page.getJSONArray("results");
-        List<Movie> movies=new ArrayList<>();
+        movies = new ArrayList<>();
         for(int i=0;i<results.length();i++){
             JSONObject o=results.getJSONObject(i);
             Movie movie=new Movie(o);
@@ -117,6 +127,13 @@ public class Main extends AppCompatActivity {
     AdapterView.OnItemClickListener goToMovie=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Intent movie =new Intent(main,MovieView.class);
+            Movie goToMovie = movies.get(i);
+            movie.putExtra("title", goToMovie.title);
+            movie.putExtra("poster",goToMovie.poster);
+            movie.putExtra("release",goToMovie.year);
+            movie.putExtra("description",goToMovie.description);
+            startActivity(movie);
         }
     };
 

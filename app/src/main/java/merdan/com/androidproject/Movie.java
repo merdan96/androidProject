@@ -11,8 +11,8 @@ public class Movie {
     public String title;
     public String poster;
     public String year;
-    public int runtime;
     public String description;
+    public Bitmap image=null;
     public Movie(JSONObject o) throws JSONException {
         id=o.getInt("id");
         title=o.getString("title");

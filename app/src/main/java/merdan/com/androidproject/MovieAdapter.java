@@ -46,9 +46,11 @@ public class MovieAdapter extends BaseAdapter {
             view=a.getLayoutInflater().inflate(R.layout.searchrow,null);
         }
         ((TextView)view.findViewById(R.id.title)).setText(movieList.get(i).title);
-        ((TextView)view.findViewById(R.id.year)).setText(movieList.get(i).year.split("-")[0]);
+        ((TextView)view.findViewById(R.id.year)).setText("("+movieList.get(i).year.split("-")[0]+")");
         String posterPath=movieList.get(i).poster;
         ImageView poster=(ImageView)view.findViewById(R.id.poster);
+        if(movieList.get(i).image!=null)
+            poster.setImageBitmap(movieList.get(i).image);
         //new ImageLoader(poster).execute(posterPath);
         return view;
     }
