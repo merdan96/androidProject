@@ -1,14 +1,18 @@
 package merdan.com.androidproject;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -41,6 +46,7 @@ public class Main extends AppCompatActivity {
         setContentView(R.layout.main);
         search=(EditText)findViewById(R.id.search);
         searchList=(ListView)findViewById(R.id.searchList);
+        searchList.setOnItemClickListener(goToMovie);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
         textView=(TextView)findViewById(R.id.textView);
     }
@@ -51,13 +57,7 @@ public class Main extends AppCompatActivity {
                 URL url=new URL(searchMovie+""+movieSearched);
                 HttpURLConnection http=(HttpURLConnection)url.openConnection();
                 http.setRequestMethod("GET");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
-                    }
-                });
+                runOnUiThread(preLoad);
                 http.connect();
                 if(http.getResponseCode()== HttpURLConnection.HTTP_OK){
                     BufferedReader buff=new BufferedReader(new InputStreamReader(http.getInputStream()));
@@ -74,14 +74,16 @@ public class Main extends AppCompatActivity {
             catch(MalformedURLException e){e.printStackTrace();}
             catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(getApplicationContext(),"IO Error",Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
                 e.printStackTrace();
+                Toast.makeText(getApplicationContext(),"JSON Error",Toast.LENGTH_SHORT).show();
             }
 
         }
     };
     public void Search(View v){
-        movieSearched=search.getText().toString();
+        movieSearched=search.getText().toString().replace(" ","%20");
         if(!movieSearched.isEmpty()){
         Thread toList=new Thread(searchForMovie);
         toList.start();}
@@ -96,7 +98,6 @@ public class Main extends AppCompatActivity {
             movies.add(movie);
         }
         final MovieAdapter list=new MovieAdapter(movies,this);
-        final String Json=String.valueOf(results.getJSONObject(4).getInt("id"));
         runOnUiThread(new Runnable() {
             @Override
             public void run(){
@@ -106,4 +107,17 @@ public class Main extends AppCompatActivity {
             }
         });
     }
+    Runnable preLoad=new Runnable(){
+        @Override
+        public void run() {
+            textView.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    };
+    AdapterView.OnItemClickListener goToMovie=new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        }
+    };
+
 }

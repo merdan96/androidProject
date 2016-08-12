@@ -47,19 +47,10 @@ public class MovieAdapter extends BaseAdapter {
         }
         ((TextView)view.findViewById(R.id.title)).setText(movieList.get(i).title);
         ((TextView)view.findViewById(R.id.year)).setText(movieList.get(i).year.split("-")[0]);
-
-        /*try{
-            URL url=new URL("http://image.tmdb.org/t/p/w45"+movieList.get(i).poster+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2");
-            HttpURLConnection http = (HttpURLConnection)url.openConnection();
-            http.setRequestMethod("GET");
-            http.connect();
-            if(http.getResponseCode()== HttpURLConnection.HTTP_OK) {
-                //Bitmap thumbnail= BitmapFactory.decodeStream((InputStream)http.getContent());
-                //((ImageView)view.findViewById(R.id.poster)).setImageBitmap(thumbnail);
-            }
-        }
-        catch(ProtocolException e){e.printStackTrace();}
-        catch (IOException e){e.printStackTrace();}*/
+        String posterPath=movieList.get(i).poster;
+        ImageView poster=(ImageView)view.findViewById(R.id.poster);
+        //new ImageLoader(poster).execute(posterPath);
         return view;
     }
+
 }

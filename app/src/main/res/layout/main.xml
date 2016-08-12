@@ -15,7 +15,7 @@
             android:layout_weight=".9"
             android:hint="Search for a Movie Here"
             android:id="@+id/search"
-            android:text="batman"/>
+            android:text="analyze that"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
