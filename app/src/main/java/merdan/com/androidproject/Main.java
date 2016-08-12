@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class Main extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                URL url=new URL(searchMovie+""+movieSearched);
+                URL url=new URL(searchMovie+movieSearched);
                 HttpURLConnection http=(HttpURLConnection)url.openConnection();
                 http.setRequestMethod("GET");
                 runOnUiThread(preLoad);
@@ -84,10 +85,8 @@ public class Main extends AppCompatActivity {
             catch(MalformedURLException e){e.printStackTrace();}
             catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(),"IO Error",Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(),"JSON Error",Toast.LENGTH_SHORT).show();
             }
 
         }

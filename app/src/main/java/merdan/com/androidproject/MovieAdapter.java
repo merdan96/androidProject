@@ -42,17 +42,21 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i,View view,ViewGroup viewGroup) {
+        Holder holder=new Holder();
+        String posterPath="";
         if(view==null){
             view=a.getLayoutInflater().inflate(R.layout.searchrow,null);
+            ((TextView)view.findViewById(R.id.title)).setText(movieList.get(i).title);
+            ((TextView)view.findViewById(R.id.year)).setText("("+movieList.get(i).year.split("-")[0]+")");
+            posterPath = movieList.get(i).poster;
+            holder.poster=(ImageView)view.findViewById(R.id.poster);
+            view.setTag(holder);
         }
-        ((TextView)view.findViewById(R.id.title)).setText(movieList.get(i).title);
-        ((TextView)view.findViewById(R.id.year)).setText("("+movieList.get(i).year.split("-")[0]+")");
-        String posterPath=movieList.get(i).poster;
-        ImageView poster=(ImageView)view.findViewById(R.id.poster);
-        if(movieList.get(i).image!=null)
-            poster.setImageBitmap(movieList.get(i).image);
-        //new ImageLoader(poster).execute(posterPath);
+        new ImageLoader(holder.poster).execute(posterPath);
         return view;
     }
+    static class Holder{
 
+        ImageView poster;
+    }
 }
