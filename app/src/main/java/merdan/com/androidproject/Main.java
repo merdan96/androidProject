@@ -1,12 +1,15 @@
 package merdan.com.androidproject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -39,13 +42,14 @@ public class Main extends AppCompatActivity {
     ListView searchList;
     ProgressBar progressBar;
     TextView textView;
-    String movieSearched;
+    boolean finishFlag=true;
     String searchMovie="http://api.themoviedb.org/3/search/movie?api_key=c00867b825ec5a921bb3c3bf6dfad2b2&query=",
-           getMovie="http://api.themoviedb.org/3/movie/",
+           others="http://api.themoviedb.org/3/movie/",
            apiKey="?api_key=c00867b825ec5a921bb3c3bf6dfad2b2";
+    String Url="";
     List<Movie> movies;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         search=(EditText)findViewById(R.id.search);
@@ -56,16 +60,53 @@ public class Main extends AppCompatActivity {
 
         if(getIntent().getExtras()!=null){
             String searchBack=(String)getIntent().getExtras().get("query");
-            movieSearched=searchBack;
-            Thread toList=new Thread(searchForMovie);
-            toList.start();}
+            switch(searchBack){
+                case "now_playing":
+                case "popular":
+                case "top_rated":
+                    Url=others+searchBack+apiKey;
+                    break;
 
+                default:
+                    Url=searchMovie+searchBack;
+                    break;
+            }
+            Thread toList=new Thread(searchForMovie);
+            toList.start();
+        }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.general, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.NP:
+                Url=others+"now_playing"+apiKey;
+                break;
+            case R.id.P:
+                Url=others+"popular"+apiKey;
+                break;
+            case R.id.TR:
+                Url=others+"top_rated"+apiKey;
+                break;
+        }
+        if(finishFlag){
+            finishFlag=false;
+            Thread toList = new Thread(searchForMovie);
+            toList.start();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     Runnable searchForMovie=new Runnable() {
         @Override
         public void run() {
             try {
-                URL url=new URL(searchMovie+movieSearched);
+                URL url=new URL(Url);
                 HttpURLConnection http=(HttpURLConnection)url.openConnection();
                 http.setRequestMethod("GET");
                 runOnUiThread(preLoad);
@@ -92,10 +133,13 @@ public class Main extends AppCompatActivity {
         }
     };
     public void Search(View v){
-        movieSearched=search.getText().toString().replace(" ","%20");
-        if(!movieSearched.isEmpty()){
-        Thread toList=new Thread(searchForMovie);
-        toList.start();}
+        String movieSearched=search.getText().toString().replace(" ","%20");
+        if(!movieSearched.isEmpty() && finishFlag){
+            finishFlag=false;
+            Url=searchMovie+movieSearched;
+            Thread toList=new Thread(searchForMovie);
+            toList.start();
+        }
     }
     private void putData(final String json) throws JSONException {
         JSONObject page=new JSONObject(json);
@@ -106,13 +150,13 @@ public class Main extends AppCompatActivity {
             Movie movie=new Movie(o);
             movies.add(movie);
         }
-        final MovieAdapter list=new MovieAdapter(movies,this);
         runOnUiThread(new Runnable() {
             @Override
             public void run(){
                 progressBar.setVisibility(View.INVISIBLE);
-                searchList.setAdapter(list);
+                searchList.setAdapter(new MovieAdapter(movies, main));
                 searchList.setVisibility(View.VISIBLE);
+                finishFlag=true;
             }
         });
     }

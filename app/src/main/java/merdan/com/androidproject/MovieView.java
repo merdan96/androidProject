@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,19 +29,49 @@ public class MovieView extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movieview);
+
         search=(EditText)findViewById(R.id.search);
         search.setSelected(false);
+
         title=(TextView)findViewById(R.id.title);
         year=(TextView)findViewById(R.id.year);
         overview=(TextView)findViewById(R.id.overview);
         Poster=(ImageView)findViewById(R.id.poster);
+
         title.setText((String)getIntent().getExtras().get("title"));
         year.setText("("+((String)getIntent().getExtras().get("release")).split("-")[0]+")");
         overview.setText((String)getIntent().getExtras().get("description"));
+
         overview.setMovementMethod(new ScrollingMovementMethod());
+
         src=(String)getIntent().getExtras().get("poster");
         Thread poster=new Thread(loadPoster);
         poster.start();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.general,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        String query="";
+        switch(item.getItemId()){
+            case R.id.NP:
+                query="now_playing";
+                break;
+            case R.id.P:
+                query="popular";
+                break;
+            case R.id.TR:
+                query="top_rated";
+                break;
+        }
+        Intent searchBack=new Intent(this,Main.class);
+        searchBack.putExtra("query",query);
+        startActivity(searchBack);
+        return super.onOptionsItemSelected(item);
     }
     public void Search(View v){
         movieSearched=search.getText().toString().replace(" ","%20");
