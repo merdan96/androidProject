@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,27 +46,29 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i,View view,ViewGroup viewGroup) {
-        ViewHolder holder=new ViewHolder();
+        ViewHolder holder;
         String posterPath="";
         if(view==null){
             view=a.getLayoutInflater().inflate(R.layout.searchrow,null);
-
-            holder.title=(TextView)view.findViewById(R.id.title);
-            holder.year=(TextView)view.findViewById(R.id.year);
-            holder.poster=(ImageView)view.findViewById(R.id.poster);
-
-            posterPath = movieList.get(i).poster;
+            holder=new ViewHolder(view);
 
             view.setTag(holder);
         }
         else{holder=(ViewHolder)view.getTag();}
-        
-        new ImageLoader(holder.poster).execute(posterPath);
+
         holder.title.setText(movieList.get(i).title);
         holder.year.setText("(" + movieList.get(i).year.split("-")[0] + ")");
+
+        Picasso.with(a).load("http://image.tmdb.org/t/p/w154"+movieList.get(i).poster+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2").into(holder.poster);
+
         return view;
     }
     static class ViewHolder{
+        public ViewHolder(View v){
+            title=(TextView)v.findViewById(R.id.title);
+            year=(TextView)v.findViewById(R.id.year);
+            poster=(ImageView)v.findViewById(R.id.poster);
+        }
         ImageView poster;
         TextView title,year;
     }
