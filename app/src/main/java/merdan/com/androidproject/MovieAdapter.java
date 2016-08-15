@@ -25,9 +25,11 @@ import java.util.List;
 public class MovieAdapter extends BaseAdapter {
     List<Movie> movieList;
     Activity a;
-    public MovieAdapter(List<Movie> list,Activity a){
+    boolean grid;
+    public MovieAdapter(List<Movie> list,Activity a,boolean grid){
         this.movieList=list;
         this.a=a;
+        this.grid=grid;
     }
     @Override
     public int getCount() {
@@ -49,15 +51,17 @@ public class MovieAdapter extends BaseAdapter {
         ViewHolder holder;
         String posterPath="";
         if(view==null){
-            view=a.getLayoutInflater().inflate(R.layout.searchrow,null);
+            if(!grid) view=a.getLayoutInflater().inflate(R.layout.searchrow,null);
+            else view=a.getLayoutInflater().inflate(R.layout.moviegrid,null);
             holder=new ViewHolder(view);
-
             view.setTag(holder);
         }
         else{holder=(ViewHolder)view.getTag();}
 
+        holder.id=movieList.get(i).id;
         holder.title.setText(movieList.get(i).title);
-        holder.year.setText("(" + movieList.get(i).year.split("-")[0] + ")");
+
+        if(!grid) holder.year.setText("(" + movieList.get(i).year.split("-")[0] + ")");
 
         Picasso.with(a).load("http://image.tmdb.org/t/p/w154"+movieList.get(i).poster+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2").into(holder.poster);
 
@@ -69,6 +73,7 @@ public class MovieAdapter extends BaseAdapter {
             year=(TextView)v.findViewById(R.id.year);
             poster=(ImageView)v.findViewById(R.id.poster);
         }
+        int id;
         ImageView poster;
         TextView title,year;
     }

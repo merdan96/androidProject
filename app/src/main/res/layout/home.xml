@@ -1,0 +1,67 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="merdan.com.androidproject.Home">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:focusableInTouchMode="true" android:focusable="true">
+    <EditText  xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search for a Movie Here"
+        android:id="@+id/search"
+        android:inputType="text"
+        android:layout_alignParentTop="true"
+        android:imeOptions="actionGo"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Now Playing" android:layout_below="@id/search" android:id="@+id/NP"
+        android:background="#000000" android:textSize="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingLeft="5dp"/>
+
+    <merdan.com.androidproject.GridAdapter
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"  android:id="@+id/now_playing"
+        android:numColumns="3"
+        android:verticalSpacing="15dp"
+        android:horizontalSpacing="5dp"
+        android:gravity="center"
+        android:layout_below="@id/NP"></merdan.com.androidproject.GridAdapter>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Popular" android:layout_below="@id/now_playing" android:id="@+id/P"
+        android:background="#000000"  android:textSize="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingLeft="5dp"/>
+
+    <merdan.com.androidproject.GridAdapter
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"  android:id="@+id/popular"
+        android:numColumns="3"
+        android:verticalSpacing="15dp"
+        android:horizontalSpacing="5dp"
+        android:gravity="center"
+        android:layout_below="@id/P"></merdan.com.androidproject.GridAdapter>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Top Rated" android:layout_below="@id/popular" android:id="@+id/TR"
+        android:background="#000000"  android:textSize="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingLeft="5dp"/>
+
+    <merdan.com.androidproject.GridAdapter
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"  android:id="@+id/top_rated"
+        android:numColumns="3"
+        android:verticalSpacing="15dp"
+        android:horizontalSpacing="5dp"
+        android:gravity="center"
+        android:layout_below="@id/TR"></merdan.com.androidproject.GridAdapter>
+    </RelativeLayout>
+</ScrollView>

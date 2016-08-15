@@ -1,35 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="merdan.com.androidproject.MovieView">
+<RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/searchBox"
         android:orientation="horizontal"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".9"
-            android:hint="Search for a Movie Here"
-            android:id="@+id/search"
-            android:text="" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".1"
-            android:text="Search"
-            android:onClick="Search"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" android:layout_below="@id/searchBox"
         android:id="@+id/movieBox">
         <ImageView
             android:layout_width="wrap_content"
@@ -40,17 +20,17 @@
             android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/title" android:text="Title"
+                android:layout_height="wrap_content" android:id="@+id/title"
                 android:textSize="30dp" />
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/year" android:text="Year"
+                android:layout_height="wrap_content" android:id="@+id/year"
                 android:textSize="25dp" />
         </LinearLayout>
     </LinearLayout>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:id="@+id/overview" android:layout_below="@id/movieBox"
-        android:text="Overview"
         android:textSize="20dp"/>
 </RelativeLayout>
+</ScrollView>

@@ -1,5 +1,7 @@
 package merdan.com.androidproject;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,94 +15,81 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MovieView extends ActionBarActivity {
-    String movieSearched;
-    EditText search;
+    Context main=this;
     TextView title,year,overview;
     ImageView Poster;
-    String src;
+    int id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movieview);
-
-        search=(EditText)findViewById(R.id.search);
-        search.setSelected(false);
 
         title=(TextView)findViewById(R.id.title);
         year=(TextView)findViewById(R.id.year);
         overview=(TextView)findViewById(R.id.overview);
         Poster=(ImageView)findViewById(R.id.poster);
 
-        title.setText((String)getIntent().getExtras().get("title"));
-        year.setText("("+((String)getIntent().getExtras().get("release")).split("-")[0]+")");
-        overview.setText((String)getIntent().getExtras().get("description"));
-
-        overview.setMovementMethod(new ScrollingMovementMethod());
-
-        src=(String)getIntent().getExtras().get("poster");
-        Thread poster=new Thread(loadPoster);
-        poster.start();
+        id=(int)getIntent().getExtras().get("ID");
+        Thread getMovie=new Thread(get);
+        getMovie.start();
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.general,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        String query="";
-        switch(item.getItemId()){
-            case R.id.NP:
-                query="now_playing";
-                break;
-            case R.id.P:
-                query="popular";
-                break;
-            case R.id.TR:
-                query="top_rated";
-                break;
-        }
-        Intent searchBack=new Intent(this,Main.class);
-        searchBack.putExtra("query",query);
-        startActivity(searchBack);
-        return super.onOptionsItemSelected(item);
-    }
-    public void Search(View v){
-        movieSearched=search.getText().toString().replace(" ","%20");
-        if(!movieSearched.isEmpty()){
-            Intent searchBack=new Intent(this,Main.class);
-            searchBack.putExtra("query", movieSearched);
-            startActivity(searchBack);
-            }
-    }
-    Runnable loadPoster=new Runnable() {
+    Runnable get=new Runnable() {
         @Override
         public void run() {
-            try{
-                URL url=new URL("http://image.tmdb.org/t/p/w500"+src+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2");
-                HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            try {
+                URL url=new URL("http://api.themoviedb.org/3/movie/"+id+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2");
+                HttpURLConnection http=(HttpURLConnection)url.openConnection();
                 http.setRequestMethod("GET");
                 http.connect();
                 if(http.getResponseCode()== HttpURLConnection.HTTP_OK){
-                    final Bitmap poster=BitmapFactory.decodeStream(http.getInputStream());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Poster.setImageBitmap(poster);
-                        }
-                    });
+                    BufferedReader buff=new BufferedReader(new InputStreamReader(http.getInputStream()));
+                    String json="";
+                    String temp="";
+                    while(true){
+                        temp = buff.readLine();
+                        if (temp == null) break;
+                        json += temp;
+                    }
+                    putData(json);
                 }
             }
-            catch(ProtocolException e){e.printStackTrace();}
-            catch (IOException e){e.printStackTrace();}
+            catch(MalformedURLException e){e.printStackTrace();}
+            catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     };
+    private void putData(final String json) throws JSONException {
+        JSONObject movie=new JSONObject(json);
+        final Movie movieObject=new Movie(movie);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run(){
+                Picasso.with(main).load("http://image.tmdb.org/t/p/w500"+movieObject.poster+"?api_key=c00867b825ec5a921bb3c3bf6dfad2b2").into(Poster);
+                title.setText(movieObject.title);
+                overview.setText(movieObject.description);
+                year.setText(movieObject.year.split("-")[0]);
+            }
+        });
+    }
 }

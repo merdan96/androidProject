@@ -1,8 +1,3 @@
 <resources>
     <string name="app_name">Movie Database</string>
-    <string name="title_activity_movie">movie</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
 </resources>

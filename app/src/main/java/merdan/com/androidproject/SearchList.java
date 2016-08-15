@@ -1,24 +1,17 @@
 package merdan.com.androidproject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,17 +19,15 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Main extends AppCompatActivity {
+public class SearchList extends AppCompatActivity {
     Activity main=this;
     EditText search;
     ListView searchList;
@@ -51,55 +42,18 @@ public class Main extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.searchlist);
         search=(EditText)findViewById(R.id.search);
+        search.setOnEditorActionListener(Search);
         searchList=(ListView)findViewById(R.id.searchList);
         searchList.setOnItemClickListener(goToMovie);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
         textView=(TextView)findViewById(R.id.textView);
 
-        if(getIntent().getExtras()!=null){
-            String searchBack=(String)getIntent().getExtras().get("query");
-            switch(searchBack){
-                case "now_playing":
-                case "popular":
-                case "top_rated":
-                    Url=others+searchBack+apiKey;
-                    break;
-
-                default:
-                    Url=searchMovie+searchBack;
-                    break;
-            }
-            Thread toList=new Thread(searchForMovie);
-            toList.start();
-        }
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.general, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.NP:
-                Url=others+"now_playing"+apiKey;
-                break;
-            case R.id.P:
-                Url=others+"popular"+apiKey;
-                break;
-            case R.id.TR:
-                Url=others+"top_rated"+apiKey;
-                break;
-        }
-        if(finishFlag){
-            finishFlag=false;
-            Thread toList = new Thread(searchForMovie);
-            toList.start();
-        }
-        return super.onOptionsItemSelected(item);
+        String searchBack=(String)getIntent().getExtras().get("query");
+        Url=searchMovie+searchBack;
+        Thread toList=new Thread(searchForMovie);
+        toList.start();
     }
 
     Runnable searchForMovie=new Runnable() {
@@ -132,15 +86,22 @@ public class Main extends AppCompatActivity {
 
         }
     };
-    public void Search(View v){
-        String movieSearched=search.getText().toString().replace(" ","%20");
-        if(!movieSearched.isEmpty() && finishFlag){
-            finishFlag=false;
-            Url=searchMovie+movieSearched;
-            Thread toList=new Thread(searchForMovie);
-            toList.start();
+
+    TextView.OnEditorActionListener Search=new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            if (i == EditorInfo.IME_ACTION_GO){
+                String movieSearched=search.getText().toString().replace(" ","%20");
+                if(!movieSearched.isEmpty() && finishFlag){
+                    finishFlag=false;
+                    Url=searchMovie+movieSearched;
+                    Thread toList=new Thread(searchForMovie);
+                    toList.start();
+                }
+            }
+            return true;
         }
-    }
+    };
     private void putData(final String json) throws JSONException {
         JSONObject page=new JSONObject(json);
         JSONArray results=page.getJSONArray("results");
@@ -154,7 +115,7 @@ public class Main extends AppCompatActivity {
             @Override
             public void run(){
                 progressBar.setVisibility(View.INVISIBLE);
-                searchList.setAdapter(new MovieAdapter(movies, main));
+                searchList.setAdapter(new MovieAdapter(movies, main,false));
                 searchList.setVisibility(View.VISIBLE);
                 finishFlag=true;
             }
@@ -164,18 +125,16 @@ public class Main extends AppCompatActivity {
         @Override
         public void run() {
             textView.setVisibility(View.INVISIBLE);
+            searchList.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
         }
     };
+
     AdapterView.OnItemClickListener goToMovie=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Intent movie =new Intent(main,MovieView.class);
-            Movie goToMovie = movies.get(i);
-            movie.putExtra("title", goToMovie.title);
-            movie.putExtra("poster",goToMovie.poster);
-            movie.putExtra("release",goToMovie.year);
-            movie.putExtra("description",goToMovie.description);
+            movie.putExtra("ID", ((MovieAdapter.ViewHolder)view.getTag()).id);
             startActivity(movie);
         }
     };
